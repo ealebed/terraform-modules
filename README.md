@@ -31,3 +31,7 @@ pre-commit run --all-files
 brew install terraform-docs tflint tfsec infracost tfupdate jq
 ```
 More details [here](https://github.com/antonbabenko/pre-commit-terraform?tab=readme-ov-file#1-install-dependencies)
+
+## Repository configuration
+- Labels `major`, `minor`, `patch` and `no-release` have to be created manually (from GitHub UI).
+- Wiki have to be initialized (create first commit from GitHub UI) manually.
