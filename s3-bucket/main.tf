@@ -2,7 +2,6 @@ resource "aws_s3_bucket" "self" {
   bucket = "tf-demo-${var.project_name}-${var.environment}"
 }
 
-# CKV2_AWS_6 – Block public access
 resource "aws_s3_bucket_public_access_block" "self" {
   bucket = aws_s3_bucket.self.id
 
@@ -12,7 +11,6 @@ resource "aws_s3_bucket_public_access_block" "self" {
   restrict_public_buckets = true
 }
 
-# CKV_AWS_21 – Enable versioning
 resource "aws_s3_bucket_versioning" "self" {
   bucket = aws_s3_bucket.self.id
 
@@ -21,7 +19,6 @@ resource "aws_s3_bucket_versioning" "self" {
   }
 }
 
-# CKV_AWS_145 – Default KMS encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "self" {
   bucket = aws_s3_bucket.self.id
 
@@ -33,7 +30,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "self" {
   }
 }
 
-# CKV2_AWS_61 – Lifecycle configuration (safe, no deletions)
 resource "aws_s3_bucket_lifecycle_configuration" "self" {
   bucket = aws_s3_bucket.self.id
 
