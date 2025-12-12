@@ -1,0 +1,68 @@
+name: 'reusable/analysis'
+
+on:
+  workflow_call:
+    inputs:
+      moduleRootDirectory:
+        description: 'Defines root module directory'
+        required: true
+        type: string
+
+    secrets:
+      githubToken:
+        description: 'GitHub Token value'
+        required: true
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.moduleRootDirectory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Scan module with checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: ${{ inputs.moduleRootDirectory }}
+          quiet: false
+          soft_fail: false
+          compact: false
+          skip_check: CKV_SECRET_4,CKV_TF_1,CKV2_AWS_5,CKV2_AWS_8,CKV2_AWS_16,CKV2_AWS_19,CKV2_AWS_29,CKV2_AWS_32,CKV2_AWS_47,CKV2_AWS_51,CKV2_AWS_52,CKV2_AWS_59,CKV2_AWS_62,CKV_AWS_18,CKV_AWS_27,CKV_AWS_84,CKV_AWS_109,CKV_AWS_111,CKV_AWS_120,CKV_AWS_133,CKV_AWS_134,CKV_AWS_144,CKV_AWS_162,CKV_AWS_225,CKV_AWS_248,CKV_AWS_300,CKV_AWS_308,CKV_AWS_310,CKV_AWS_317,CKV_AWS_318,CKV_AWS_323,CKV_AWS_338,CKV_AWS_356,CKV_AWS_374,CKV_AWS_382
+          # CKV_SECRET_4 - "Password is not hardcoded; value is injected from Terraform variables and also stored separately as SecureString fields."
+          # CKV_TF_1 - "We use Terraform module sources with a tag (version number), not a commit hash."
+          # CKV2_AWS_5 - "SG attachment is done by consuming stacks - not relevant in reusable module."
+          # CKV2_AWS_8 - "IAM DB authentication is disabled by default to avoid breaking auth; enable via var.enable_iam_auth when required."
+          # CKV2_AWS_16 - "Autoscaling is optional by design for predictable cost and traffic profiles."
+          # CKV2_AWS_19 - "Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances - not relevant here."
+          # CKV2_AWS_29 - "API Gateway caching is optional and cost-sensitive; enable per stage when appropriate."
+          # CKV2_AWS_32 - "Response headers managed by upstream ALB/CDN layer - not relevant here."
+          # CKV2_AWS_47 - "WAF associated at higher-level distribution in parent stack - not relevant here."
+          # CKV2_AWS_51 - "Client cert auth not a baseline control; use IAM/Cognito/authorizers instead."
+          # CKV2_AWS_52 - "Ensure AWS ElasticSearch/OpenSearch Fine-grained access control is enabled."
+          # CKV2_AWS_59 - "Dedicated master must be enabled - irrelevant in generic modules."
+          # CKV2_AWS_62 - "Ensure S3 buckets should have event notifications enabled - not relevant to flow logs bucket."
+          # CKV_AWS_18 - "Ensure the S3 bucket has access logging enabled - requires a separate target bucket (org decision)."
+          # CKV_AWS_27 - "Ensure all data stored in the SQS queue is encrypted."
+          # CKV_AWS_84 - "Elasticsearch Domain Logging must be enabled; module intentionally allows disabling logs, check is NOT RELEVANT."
+          # CKV_AWS_109 - "KMS key policy must use Resource="*" and include PutKeyPolicy; restricted by principals/conditions."
+          # CKV_AWS_111 - "KMS key policy includes write-like actions by design; scope is limited via principals/conditions."
+          # CKV_AWS_120 - "WAF is attached at the edge (CloudFront/ALB) or via var.waf_web_acl_arn; not enforced in a generic module."
+          # CKV_AWS_133 - "Backups beyond native retention are managed by central AWS Backup, out of scope for this module."
+          # CKV_AWS_134 - "Backups are configured on the replication group via snapshot_retention_limit."
+          # CKV_AWS_144 - "Ensure that S3 bucket has cross-region replication enabled - CRR is costy & org-level choice."
+          # CKV_AWS_162 - "AWS Backup Plan/Selection is managed in a separate infra layer."
+          # CKV_AWS_225 - "API Gateway stages should have caching enabled if specified in the stage configuration."
+          # CKV_AWS_248 - "Module support configuring SG; check is NOT RELEVANT for a generic module."
+          # CKV_AWS_300 - "Ensure S3 lifecycle configuration sets period for aborting failed uploads."
+          # CKV_AWS_308 - "API Gateway cache should be encrypted."
+          # CKV_AWS_310 - "Ensure CloudFront distributions should have origin failover configured."
+          # CKV_AWS_317 - "Audit logging must be enabled - check is NOT RELEVANT for a generic module."
+          # CKV_AWS_318 - "Ensure ≥3 dedicated master nodes - check is NOT applicable for managed/internal clusters."
+          # CKV_AWS_323 - "Subnet group is configured at replication group; the cluster inherits it from the group."
+          # CKV_AWS_338 - "API Gateway logs retention is configured to 14 days by default."
+          # CKV_AWS_356 - "KMS key policies require Resource="*"; usage constrained by principals/conditions."
+          # CKV_AWS_374 - "Ensure AWS CloudFront web distribution has geo restriction enabled."
+          # CKV_AWS_382 - "Ensure no security groups allow egress from 0.0.0.0:0 to port -1."
