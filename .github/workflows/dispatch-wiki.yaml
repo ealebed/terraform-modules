@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Update Wiki"
     steps:
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           run-id: ${{ github.event.client_payload.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
