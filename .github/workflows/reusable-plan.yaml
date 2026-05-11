@@ -30,7 +30,7 @@ jobs:
     name: 'Module: ${{ inputs.moduleRootDirectory }}'
     steps:
       - name: Label PR with module name
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ github.event_name == 'pull_request' }}
         id: label
         with:
@@ -44,7 +44,7 @@ jobs:
             })
 
       - name: Detect previous version number
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         id: prev-version
         env:
           PACKAGE_NAME: '${{ inputs.moduleRootDirectory }}'
@@ -68,7 +68,7 @@ jobs:
           result-encoding: string
 
       - name: Determine new version number
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         id: new-version
         env:
           PREV_VERSION: '${{ steps.prev-version.outputs.result }}'
@@ -97,7 +97,7 @@ jobs:
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
 
       - name: Extract changelog entry
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
